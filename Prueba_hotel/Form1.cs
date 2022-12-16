@@ -130,10 +130,6 @@ namespace Prueba_hotel
             //System.Diagnostics.Process.Start("www.github.com/sebastianorellana017/Prueba_hotel");
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            LinkLabel.LinkVisited = true;
-            System.Diagnostics.Process.Start("www.github.com/sebastianorellana017/Prueba_hotel");
-        }
+        
     }
 }
