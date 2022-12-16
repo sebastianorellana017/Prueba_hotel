@@ -7,13 +7,10 @@ namespace Prueba_hotel
 {
     public partial class Form1 : Form
     {
-        Clases.Conexion db = new Clases.Conexion();
 
         public Form1()
         {
             InitializeComponent();
-
-            db.establecerConexion();
 
         }
 
@@ -125,6 +122,18 @@ namespace Prueba_hotel
         private void btnCinco_Click(object sender, EventArgs e)
         {
             AbrirFormHija(new Habitaciones.Foto.Photo());
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            //pictureBox2.LinkVisited = true;
+            //System.Diagnostics.Process.Start("www.github.com/sebastianorellana017/Prueba_hotel");
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            LinkLabel.LinkVisited = true;
+            System.Diagnostics.Process.Start("www.github.com/sebastianorellana017/Prueba_hotel");
         }
     }
 }

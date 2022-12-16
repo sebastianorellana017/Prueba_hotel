@@ -117,11 +117,11 @@
             this.label3.Cursor = System.Windows.Forms.Cursors.Hand;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label3.ForeColor = System.Drawing.SystemColors.Control;
-            this.label3.Location = new System.Drawing.Point(227, 404);
+            this.label3.Location = new System.Drawing.Point(209, 413);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(59, 13);
+            this.label3.Size = new System.Drawing.Size(88, 13);
             this.label3.TabIndex = 13;
-            this.label3.Text = "Registrate";
+            this.label3.Text = "Kasa@2022 v3.0";
             this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // label4

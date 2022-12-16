@@ -38,6 +38,8 @@
             // 
             // mostrarUser
             // 
+            this.mostrarUser.AllowUserToAddRows = false;
+            this.mostrarUser.AllowUserToDeleteRows = false;
             this.mostrarUser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -61,10 +63,11 @@
             this.mostrarUser.DefaultCellStyle = dataGridViewCellStyle2;
             this.mostrarUser.Location = new System.Drawing.Point(57, 51);
             this.mostrarUser.Name = "mostrarUser";
+            this.mostrarUser.ReadOnly = true;
             this.mostrarUser.RowTemplate.Height = 25;
             this.mostrarUser.Size = new System.Drawing.Size(667, 356);
             this.mostrarUser.TabIndex = 0;
-            this.mostrarUser.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.mostrarUser_CellContentDoubleClick);
+            this.mostrarUser.DoubleClick += new System.EventHandler(this.mostrarUser_DoubleClick);
             // 
             // btnBorrarUser
             // 
@@ -106,6 +109,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Usuarios";
             this.Text = "Usuarios";
+            this.Load += new System.EventHandler(this.Usuarios_Load);
             ((System.ComponentModel.ISupportInitialize)(this.mostrarUser)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

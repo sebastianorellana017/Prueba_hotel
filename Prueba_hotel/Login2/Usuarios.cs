@@ -8,6 +8,7 @@ namespace Prueba_hotel.Login
 {
     internal class Usuarios
     {
+        //Objetos de la clase
         int id, id_tipo;
         string usuario, password, conPassword, nombre;
 

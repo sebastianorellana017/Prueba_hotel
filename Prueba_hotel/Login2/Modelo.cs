@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace Prueba_hotel.Login
     {
         public int registro(Usuarios usuario)
         {
-            MySqlConnection conexion = Conexion.getConexion();
+            NpgsqlConnection conexion = Conexion.getConexion();
             conexion.Open();
 
             string sql = "INSERT INTO usuarios (usuario, password, nombre, id_tipo) VALUES(@usuario, @password, @nombre, @id_tipo)";
-            MySqlCommand comando = new MySqlCommand(sql, conexion);
+            NpgsqlCommand comando = new NpgsqlCommand(sql, conexion);
             comando.Parameters.AddWithValue("@usuario", usuario.Usuario);
             comando.Parameters.AddWithValue("@password", usuario.Password);
             comando.Parameters.AddWithValue("@nombre", usuario.Nombre);
@@ -28,12 +29,12 @@ namespace Prueba_hotel.Login
 
         public bool existeUsuario(string usuario)
         {
-            MySqlDataReader reader;
-            MySqlConnection conexion = Conexion.getConexion();
+            NpgsqlDataReader reader;
+            NpgsqlConnection conexion = Conexion.getConexion();
             conexion.Open();
 
             string sql = "SELECT id FROM usuarios WHERE usuario LIKE @usuario";
-            MySqlCommand comando = new MySqlCommand(sql, conexion);
+            NpgsqlCommand comando = new NpgsqlCommand(sql, conexion);
             comando.Parameters.AddWithValue("@usuario", usuario);
 
             reader = comando.ExecuteReader();
@@ -50,12 +51,12 @@ namespace Prueba_hotel.Login
 
         public Usuarios porUsuario(string usuario)
         {
-            MySqlDataReader reader;
-            MySqlConnection conexion = Conexion.getConexion();
+            NpgsqlDataReader reader;
+            NpgsqlConnection conexion = Conexion.getConexion();
             conexion.Open();
 
             string sql = "SELECT id, password, nombre, id_tipo FROM usuarios WHERE usuario LIKE @usuario";
-            MySqlCommand comando = new MySqlCommand(sql, conexion);
+            NpgsqlCommand comando = new NpgsqlCommand(sql, conexion);
             comando.Parameters.AddWithValue("@usuario", usuario);
 
             reader = comando.ExecuteReader();

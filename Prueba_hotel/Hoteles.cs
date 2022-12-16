@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -19,34 +21,103 @@ namespace Prueba_hotel
         {
             InitializeComponent();
 
-            
-            Clases.Hoteles reserva = new Clases.Hoteles();
-            reserva.mostrarHoteles(dataGridView1);
 
         }
-
-        private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+       
+        private void Hoteles_Load(object sender, EventArgs e)
         {
-            Clases.Hoteles hoteles = new Clases.Hoteles();
-            hoteles.seleccionarHotel(dataGridView1, txtID, txtCreated, txtUpdate, txtDay, txtReservationID);
+            ReadRecords();
+            InitButtons();
+        }
+
+        //ConnectionStrings
+        readonly string stdPGcon = ConfigurationManager.ConnectionStrings["PGcon"].ConnectionString;
+
+        // BOTONES
+        private void InitButtons()
+        {
+            btnBorrarReserva.Enabled = false;
+        }
+
+
+        private void dgv_DoubleClick(object sender, EventArgs e)
+        {
+            btnBorrarReserva.Enabled = true;
+
+            txtID.Text = dgv.CurrentRow.Cells["Id"].Value.ToString();
+            txtCreated.Text = dgv.CurrentRow.Cells["Created"].Value.ToString();
+            txtUpdate.Text = dgv.CurrentRow.Cells["updated"].Value.ToString();
+            txtDay.Text = dgv.CurrentRow.Cells["day"].Value.ToString();
+            txtReservationID.Text = dgv.CurrentRow.Cells["reservation_id"].Value.ToString();
         }
 
         private void btnBorrarReserva_Click(object sender, EventArgs e)
         {
-            Clases.Hoteles hoteles = new Clases.Hoteles();
-            hoteles.eliminarrHotel(txtID);
-            hoteles.mostrarHoteles(dataGridView1);
+            DialogResult result = MessageBox.Show("Estas seguro de borrar", "Borrado", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
+            {
+                int recordId = Convert.ToInt32(dgv.CurrentRow.Cells["id"].Value);
+                DeleteRecord(recordId);
+                ReadRecords();
+            }
+            ClearTextBoxes();
+            //StateTextBoxes(false);
+            InitButtons();
 
-            LimpiarCampos();
         }
 
-        private void LimpiarCampos()
+        private void DeleteRecord(int id)
         {
-            txtID.Clear();
-            txtCreated.Clear();
-            txtUpdate.Clear();
-            txtDay.Clear();
-            txtReservationID.Clear();
+            try
+            {
+                using (NpgsqlConnection myPGConnection = new NpgsqlConnection(stdPGcon))
+                {
+                    myPGConnection.Open();
+                    string sql_query = "DELETE FROM reservations_bookedday WHERE id=" + id;
+                    NpgsqlCommand cmd = new NpgsqlCommand();
+                    cmd = new NpgsqlCommand(sql_query, myPGConnection);
+                    cmd.ExecuteNonQuery();
+
+                    MessageBox.Show("Borrado");
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No se pudo borrar", "data error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
+
+        private void ClearTextBoxes()
+        {
+            foreach (TextBox tb in this.Controls.OfType<TextBox>())
+            {
+                tb.Text = string.Empty;
+            }
+
+        }
+
+        //********************************** LEER DATAGRID **********************************************
+        private void ReadRecords()
+        {
+            try
+            {
+                using (NpgsqlConnection myPGConnection = new NpgsqlConnection(stdPGcon))
+                {
+                    myPGConnection.Open();
+                    NpgsqlCommand cmd = new NpgsqlCommand("SELECT * from reservations_bookedday", myPGConnection);
+                    DataTable dt = new DataTable();
+                    NpgsqlDataReader dr = cmd.ExecuteReader();
+                    dt.Load(dr);
+                    dgv.DataSource = dt;
+                }
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("no pudiste conectarte", "data base error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+            }
+        }
+
     }
 }

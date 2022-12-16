@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using Prueba_hotel.Habitaciones.Regla;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,6 +18,7 @@ namespace Prueba_hotel.Crear_Hotel
         public crudHotel()
         {
             InitializeComponent();
+        
         }
 
         private void btnCancelar_Click(object sender, EventArgs e)
@@ -35,6 +38,32 @@ namespace Prueba_hotel.Crear_Hotel
         {
             ReleaseCapture();
             SendMessage(this.Handle, 0x112, 0xf012, 0);
+        }
+
+        private void btnCrear_Click(object sender, EventArgs e)
+        {
+            
+
+        }
+
+        private void cargarSuperuser()
+        {
+            
+
+           
+        }
+
+        private void cargarRoomid()
+        {
+            
+
+
+        }
+
+        private void LimpiarCampos()
+        {
+           
+
         }
     }
 }

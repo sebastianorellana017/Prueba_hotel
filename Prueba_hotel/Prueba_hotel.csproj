@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="8.0.31" />
+    <PackageReference Include="Npgsql" Version="7.0.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
     <PackageReference Include="XAct.Core.PCL" Version="0.0.5014" />
   </ItemGroup>
 

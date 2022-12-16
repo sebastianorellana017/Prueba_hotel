@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -16,49 +18,203 @@ namespace Prueba_hotel.Habitaciones.Regla
         {
             InitializeComponent();
 
-            Reglas reglas = new Reglas();
-            reglas.mostrarReglas(dataGridView1);
+        }
+
+        //ConnectionStrings
+        readonly string stdPGcon = ConfigurationManager.ConnectionStrings["PGcon"].ConnectionString;
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            ClearTextBoxes();
+            InitButtons();
+        }
+
+        private void ClearTextBoxes()
+        {
+            foreach (TextBox tb in this.Controls.OfType<TextBox>())
+            {
+                tb.Text = string.Empty;
+            }
+            StateTextBoxes(false);
+        }
+
+        // BOTONES 
+        private void InitButtons()
+        {
+            btnNew.Enabled = true;
+            btnGuardar.Enabled = false;
+            btnModificar.Enabled = false;
+            btnClear.Enabled = false;
+            btnBorrar.Enabled = false;
+
+        }
+
+        // INHABILITAR TEXTBOXES 
+        private void StateTextBoxes(bool state)
+        {
+            if (state == false)
+            {
+                foreach (TextBox tb in this.Controls.OfType<TextBox>())
+                {
+                    tb.Enabled = false;
+                }
+            }
+            else if (state == true)
+            {
+                foreach (TextBox tb in this.Controls.OfType<TextBox>())
+                {
+                    tb.Enabled = true;
+                }
+            }
+        }
+
+        private void btnNew_Click(object sender, EventArgs e)
+        {
+            StateTextBoxes(true);
+            btnGuardar.Enabled = true;
+        }
+
+        //********************************** LEER DATAGRID **********************************************
+        private void ReadRecords()
+        {
+            try
+            {
+                using (NpgsqlConnection myPGConnection = new NpgsqlConnection(stdPGcon))
+                {
+                    myPGConnection.Open();
+                    NpgsqlCommand cmd = new NpgsqlCommand("SELECT * from rooms_houserule", myPGConnection);
+                    DataTable dt = new DataTable();
+                    NpgsqlDataReader dr = cmd.ExecuteReader();
+                    dt.Load(dr);
+                    dgv.DataSource = dt;
+                }
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("no pudiste conectarte", "data base error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+            }
+        }
+
+        private void dgv_DoubleClick(object sender, EventArgs e)
+        {
+            StateTextBoxes(true);
+            btnNew.Enabled = false;
+            btnModificar.Enabled = true;
+            btnClear.Enabled = true;
+            btnBorrar.Enabled = true;
+
+
+            txtID.Text = dgv.CurrentRow.Cells["Id"].Value.ToString();
+            txtCreado.Text = dgv.CurrentRow.Cells["Created"].Value.ToString();
+            txtActualizado.Text = dgv.CurrentRow.Cells["updated"].Value.ToString();
+            txtComodidad.Text = dgv.CurrentRow.Cells["name"].Value.ToString();
         }
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            Reglas reglas = new Reglas();
-            reglas.guardarReglas(txtReglas);
-            reglas.mostrarReglas(dataGridView1);
+            SaveRecord();
+            ReadRecords();
+            ClearTextBoxes();
+            btnGuardar.Enabled = false;
+        }
 
-            LimpiarCampos();
+        private void SaveRecord()
+        {
+            try
+            {
+                using (NpgsqlConnection myPGConnection = new NpgsqlConnection(stdPGcon))
+                {
+                    myPGConnection.Open();
+                    NpgsqlCommand cmd = new NpgsqlCommand();
+
+                    string sql_query = "INSERT INTO rooms_houserule(name) VALUES" +
+                                       "('" + txtComodidad.Text + "')";
+                    cmd = new NpgsqlCommand(sql_query, myPGConnection);
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Guardado");
+
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No pudiste agregarlo", "Data base error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+            }
+
         }
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
-            Reglas reglas = new Reglas();
-            reglas.modificarReglas(txtID, txtReglas);
-            reglas.mostrarReglas(dataGridView1);
+            int recordId = Convert.ToInt32(dgv.CurrentRow.Cells["id"].Value);
+            UpdateRecord(recordId);
 
-            LimpiarCampos();
+            ReadRecords();
+            ClearTextBoxes();
+            InitButtons();
+        }
+
+        private void UpdateRecord(int id)
+        {
+            try
+            {
+                using (NpgsqlConnection myPGConnection = new NpgsqlConnection(stdPGcon))
+                {
+                    myPGConnection.Open();
+                    NpgsqlCommand cmd = new NpgsqlCommand();
+
+                    string sql_query = ("UPDATE rooms_houserule SET name='" + txtComodidad.Text + "' WHERE id=" + id);
+                    cmd = new NpgsqlCommand(sql_query, myPGConnection);
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Actualizado");
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("no se pudo actualizar", "data error", MessageBoxButtons.OK, MessageBoxIcon.Warning); ;
+            }
         }
 
         private void btnBorrar_Click(object sender, EventArgs e)
         {
-            Reglas reglas = new Reglas();
-            reglas.eliminarReglas(txtID);
-            reglas.mostrarReglas(dataGridView1);
-
-            LimpiarCampos();
+            DialogResult result = MessageBox.Show("Estas seguro de borrar", "Borrado", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
+            {
+                int recordId = Convert.ToInt32(dgv.CurrentRow.Cells["id"].Value);
+                DeleteRecord(recordId);
+                ReadRecords();
+            }
+            ClearTextBoxes();
+            StateTextBoxes(false);
+            InitButtons();
         }
 
-        private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void DeleteRecord(int id)
         {
-            Reglas reglas = new Reglas();
-            reglas.seleccionarReglas(dataGridView1, txtID, txtCreado, txtActualizado, txtReglas);
+            try
+            {
+                using (NpgsqlConnection myPGConnection = new NpgsqlConnection(stdPGcon))
+                {
+                    myPGConnection.Open();
+                    string sql_query = "DELETE FROM rooms_houserule WHERE id=" + id;
+                    NpgsqlCommand cmd = new NpgsqlCommand();
+                    cmd = new NpgsqlCommand(sql_query, myPGConnection);
+                    cmd.ExecuteNonQuery();
+
+                    MessageBox.Show("Borrado");
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No se pudo borrar", "data error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
-        private void LimpiarCampos()
+        private void Rules_Load(object sender, EventArgs e)
         {
-            txtID.Clear();
-            txtCreado.Clear();
-            txtActualizado.Clear();
-            txtReglas.Clear();
+            ReadRecords();
+            InitButtons();
+            StateTextBoxes(false);
         }
     }
 }

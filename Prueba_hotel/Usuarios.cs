@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -17,25 +19,49 @@ namespace Prueba_hotel
         {
             InitializeComponent();
 
-            Clases.Usuarios usuarios = new Clases.Usuarios();
-            usuarios.mostrarUsuarios(mostrarUser);
+
         }
 
-        private void mostrarUser_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        //ConnectionStrings
+        readonly string stdPGcon = ConfigurationManager.ConnectionStrings["PGcon"].ConnectionString;
+
+        private void Usuarios_Load(object sender, EventArgs e)
         {
-            //clases.Usuario usuario = new clases.Usuario();
-            //usuario.seleccionarUsuario(dataGridView1, txId, txNombre, txApellido, txEdad);
-
-            Clases.Usuarios usuario = new Clases.Usuarios();
-            usuario.seleccionarUsuario(mostrarUser, txtID);
+            ReadRecords();
         }
 
+        // ***************** DATAGRID ********************
+        private void ReadRecords()
+        {
+            try
+            {
+                using (NpgsqlConnection myPGConnection = new NpgsqlConnection(stdPGcon))
+                {
+                    myPGConnection.Open();
+                    NpgsqlCommand cmd = new NpgsqlCommand("SELECT * from users_user", myPGConnection);
+                    DataTable dt = new DataTable();
+                    NpgsqlDataReader dr = cmd.ExecuteReader();
+                    dt.Load(dr);
+                    mostrarUser.DataSource = dt;
+                }
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("no pudiste conectarte", "data base error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+            }
+        }
         private void btnBorrarUser_Click(object sender, EventArgs e)
         {
-            //Usuarios usuario = new Usuarios();
-            Clases.Usuarios usuario = new Clases.Usuarios();
-            usuario.eliminarrUsuario(txtID);
-            usuario.mostrarUsuarios(mostrarUser);
+
         }
+
+        private void mostrarUser_DoubleClick(object sender, EventArgs e)
+        {
+
+        }
+
+       
     }
 }
